@@ -1,0 +1,96 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2708
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica-Bold;\f1\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red26\green26\blue26;\red39\green42\blue42;\red184\green14\blue61;
+\red251\green252\blue255;}
+{\*\expandedcolortbl;;\cssrgb\c13333\c13333\c13333;\cssrgb\c20392\c21961\c21961;\cssrgb\c78039\c14510\c30588;
+\cssrgb\c98824\c99216\c100000;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sa210\partightenfactor0
+
+\f0\b\fs60 \cf2 \expnd0\expndtw0\kerning0
+Introduction
+\f1\b0 \cf0 \kerning1\expnd0\expndtw0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardeftab720\pardirnatural\partightenfactor0
+
+\fs28 \cf0 Implement a multiprocessor operating system simulator using a popular userspace threading library for linux called pthreads. \
+
+\fs24 \
+
+\fs40 Files Included:
+\fs24 \
+
+\fs28 src/os-sim.c - Code for the operating system simulator.\
+src/os-sim.h - Header file for the simulator.\
+src/process.c - Descriptions of the simulated processes.\
+src/process.h - Header file for the process data.\
+src/student.c - Ir code for the scheduler.\
+src/student.h - Header file for Ir scheduler code.
+\fs24 \
+\
+
+\fs50 Scheduling Algorithms\
+
+\fs28 For this simulator, I implement the following three CPU scheduling algorithms:\
+\
+
+\f0\b First In, First Out (FIFO)
+\f1\b0  - Runnable processes are kept in a ready queue. FIFO is non-preemptive; once a process begins running on a CPU, it will continue running until it either completes or blocks for I/O.\
+\
+
+\f0\b Round-Robin
+\f1\b0  - Similar to FIFO, except preemptive. Each process is assigned a timeslice when it is scheduled. At the end of the timeslice, if the process is still running, the process is preempted, and moved to the tail of the ready queue.\
+\
+For this scheduling, -r, which selects the Round-Robin scheduling algorithm, and accepts a parameter, the length of the timeslice. For this project, timeslices are measured in tenths of seconds. E.g.:\
+\
+./os-sim <# CPUs> -r 5\
+\
+should run a Round-Robin scheduler with timeslices of 500 ms. While:\
+\
+./os-sim <# of CPUs>\
+\
+should continue to run a FIFO scheduler.\
+\
+
+\f0\b Longest Remaining Time First (LRTF) 
+\f1\b0  - The process with the longest remaining time in its burst always gets the CPU. Shorter processes must be pre-empted if a process that has a longer burst becomes runnable.\
+\
+For this  scheduling, -l, which selects the LRTF scheduling algorithm. E.g.:\
+\
+./os-sim <# CPUs> -l\
+\
+should run a LRTF scheduler. While:\
+\
+./os-sim <# of CPUs>\
+\
+should continue to run a FIFO scheduler.
+\fs24 \
+\
+
+\fs50 Process States\
+
+\fs28 In my OS simulation, there are five possible states for a process, which are listed in the process_state_t enum in os-sim.h:\
+\
+NEW - The process is being created, and has not yet begun executing.\
+READY - The process is ready to execute, and is waiting to be scheduled on a CPU.\
+RUNNING - The process is currently executing on a CPU.\
+WAITING - The process has temporarily stopped executing, and is waiting on an I/O request to complete.\
+TERMINATED - The process has completed.\
+There is a field named state in the PCB, which must be updated with the current state of the process. The simulator will use this field to collect statistics.\
+
+\fs60 \
+
+\fs50 Compile and Run\
+\pard\pardeftab720\sa210\partightenfactor0
+
+\fs28 \cf3 \expnd0\expndtw0\kerning0
+Compile and run the simulator with \cf4 \cb5 ./os-sim 2\cf3 \cb1 . After a few seconds, hit Control-C to exit.\
+I use pthreads to simulate an operating system on a multiprocessor computer. I use one thread per CPU and one thread as a 'supervisor' for our simulation. The CPU threads will simulate the currently-running processes on each CPU, and the supervisor thread will print output and dispatch events to the CPU threads.\
+\
+Since the code will be called from multiple threads, the CPU scheduler is thread-safe! This means that all data structures used, including the ready queue, is protected using mutexes.\
+The number of CPUs is specified as a command-line parameter to the simulator. For this project, I performed experiments with 1, 2, and 4 CPU simulations.\
+\
+Also, for demonstration purposes, the simulator executes much slower than a real system would. In the real world, a CPU burst might range from one to a few hundred milliseconds, whereas in this simulator, they range from 0.2 to 2.0 seconds.\
+The simulator generates a Gantt Chart, showing the current state of the OS at every 100ms interval. The leftmost column shows the current time, in seconds. The next three columns show the number of Running, Ready, and Waiting processes, respectively. The next two columns show the process currently running on each CPU. The rightmost column shows the processes which are currently in the I/O queue, with the head of the queue on the left and the tail of the queue on the right.
+\fs24 \cf0 \kerning1\expnd0\expndtw0 \
+}
